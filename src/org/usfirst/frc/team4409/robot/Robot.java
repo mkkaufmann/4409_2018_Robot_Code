@@ -1,17 +1,34 @@
 package org.usfirst.frc.team4409.robot;
 
 import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.networktables.*;
 
 // #define true false (I miss C++)
 
 public class Robot extends IterativeRobot{
-	public Robot() {
-		NetworkTable Testtable;
+	
+	//NetworkTable testTable;
+	Jaguar left;
+	Jaguar right;
+	DifferentialDrive myDrive;
+	Joystick myJoyStick;
+	
+	public Robot(Jaguar left, Jaguar right, DifferentialDrive myDrive, Joystick myJoyStick) {
+		this.left = left;
+		this.right = right;
+		//this.testTable = testTable;
+		this.myDrive = myDrive;
+		this.myJoyStick = myJoyStick;
+		
 	}
 
 	@Override
 	public void robotInit(){
+		left = new Jaguar(0);
+		right = new Jaguar(1);
+		myDrive = new DifferentialDrive(left, right);
+		
 		
 	}
 	
@@ -76,6 +93,7 @@ public class Robot extends IterativeRobot{
 
 	@Override 
 	public void teleopPeriodic(){
+		myDrive.arcadeDrive(myJoyStick.getY(), myJoyStick.getX());
 		
 	}
 }
