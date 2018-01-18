@@ -13,6 +13,8 @@ public class Robot extends IterativeRobot{
 	Jaguar right;
 	DifferentialDrive myDrive;
 	Joystick myJoyStick;
+	Compressor pump;
+	DoubleSolenoid claw;
 	
 	/*
 	public Robot(Jaguar left, Jaguar right, DifferentialDrive myDrive, Joystick myJoyStick) {
@@ -31,7 +33,9 @@ public class Robot extends IterativeRobot{
 		right = new Jaguar(1);
 		myDrive = new DifferentialDrive(left, right);
 		myJoyStick = new Joystick(1);
-		
+		pump = new Compressor(0);
+		pump.setClosedLoopControl(true);
+		claw = new DoubleSolenoid(0,1);
 		
 	}
 	
@@ -97,6 +101,12 @@ public class Robot extends IterativeRobot{
 	@Override 
 	public void teleopPeriodic(){
 		myDrive.arcadeDrive(myJoyStick.getY(), myJoyStick.getX());
+		if(myJoyStick.getRawButton(1) == true){
+			claw.set(DoubleSolenoid.Value.kForward);
+		}
+		else{
+			claw.set(DoubleSolenoid.Value.kReverse);
+		}
 		
 	}
 }
