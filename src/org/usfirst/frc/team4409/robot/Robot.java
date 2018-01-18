@@ -14,6 +14,7 @@ public class Robot extends IterativeRobot{
 	DifferentialDrive myDrive;
 	Joystick myJoyStick;
 	
+	/*
 	public Robot(Jaguar left, Jaguar right, DifferentialDrive myDrive, Joystick myJoyStick) {
 		this.left = left;
 		this.right = right;
@@ -22,12 +23,14 @@ public class Robot extends IterativeRobot{
 		this.myJoyStick = myJoyStick;
 		
 	}
+	*/
 
 	@Override
 	public void robotInit(){
 		left = new Jaguar(0);
 		right = new Jaguar(1);
 		myDrive = new DifferentialDrive(left, right);
+		myJoyStick = new Joystick(1);
 		
 		
 	}
