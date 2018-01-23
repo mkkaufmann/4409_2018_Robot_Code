@@ -3,6 +3,7 @@
 package org.usfirst.frc.team4409.robot;
 
 import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.networktables.*;
 import java.util.*;
@@ -21,6 +22,7 @@ public class Robot extends IterativeRobot {
 	DoubleSolenoid claw;
 	ArrayList<ArrayList<Double>> auto;
 	double arm, lift,drive, wait;
+	Timer timer;
 
 	/*
 	 * public Robot(Jaguar left, Jaguar right, DifferentialDrive myDrive,
@@ -55,24 +57,51 @@ public class Robot extends IterativeRobot {
 	public enum startPos {
 		L, M, R
 	}
-	public void drive(ArrayList<Integer> parameters){
+	public boolean drive(ArrayList<Double> parameters,boolean isFirst){
 		//parameter 0 is not used here
-		switch ((int)parameters.get(1)){
+		switch ((int)Math.floor(parameters.get(1))){
 			case 0:
-				//drive
+				//drive (CHANGE TO ENCODERS)
 				myDrive.arcadeDrive(parameters.get(2), parameters.get(3));
-				break;
-			case 1:
+				return true;
+		case 1:
 				//turn
-				break;
+				return true;
 		}
+		return false;
 	}
+	
+	private boolean wait(ArrayList<Double> parameters, boolean isFirst) {
+		// TODO Auto-generated method stub
+		if(isFirst){
+			timer.reset();
+			timer.start();
+		}
+		if(timer.hasPeriodPassed(parameters.get(1))){
+			timer.stop();
+			return true;
+		}
+		return false;
+	}
+
+	private boolean lift(ArrayList<Double> parameters, boolean isFirst) {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	private boolean arm(ArrayList<Double> parameters, boolean isFirst) {
+		// TODO Auto-generated method stub
+		return true;
+	}
+	
 	@Override
 	public void autonomousInit() {
+		timer = new Timer();
 		auto = new ArrayList<ArrayList<Double>>();
 		ArrayList<Double> parameters;
 		String gameData;
-		gameData = DriverStation.getInstance().getGameSpecificMessage();
+		gameData = DriverStation.getInstance().getGameSpecificMessage();//check to see if this message is recieved
+		
 		startPos pos = startPos.L;
 		if (pos == startPos.L) {
 			if (gameData.charAt(0) == 'L') {
@@ -83,6 +112,7 @@ public class Robot extends IterativeRobot {
 					// go for scale
 				} else {
 					// baseline
+					//check to see that this is run
 					parameters = new ArrayList<Double>();
 					parameters.add(drive);
 					parameters.add(0.00);
@@ -142,8 +172,30 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void autonomousPeriodic() {
-
+		int index = 0;
+		boolean isComplete = true;
+		boolean isFirst = true;
+		switch((int)Math.floor(auto.get(0).get(0))){
+			case 0:
+				isComplete = arm(auto.get(0),isFirst);
+			case 1:
+				isComplete = lift(auto.get(0),isFirst);
+			case 2:
+				isComplete = drive(auto.get(0),isFirst);
+			case 3:
+				isComplete = wait(auto.get(0),isFirst);
+		}
+		isFirst = false;
+		if(isComplete){
+			isComplete = false;
+			isFirst = true;
+			if(auto.size() > index){
+				index++;
+			}
+		}
 	}
+
+	
 
 	@Override
 	public void teleopInit() {
